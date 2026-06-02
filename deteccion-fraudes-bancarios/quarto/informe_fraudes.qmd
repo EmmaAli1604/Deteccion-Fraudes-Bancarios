@@ -1,0 +1,40 @@
+---
+title: "Reporte de Análisis de Riesgo y Fraude"
+author: "Ingeniería de Datos"
+date: today
+format: html # Por defecto compilará a HTML. Cámbialo a 'pdf' cuando necesites el documento estático.
+jupyter: python3
+---
+
+## 1. Resumen Ejecutivo de Transacciones
+
+Este documento presenta los resultados de la última ejecución del pipeline de detección de anomalías. Los datos han sido procesados, validados y extraídos directamente de nuestra arquitectura de datos.
+
+```{python}
+#| label: setup-kedro
+import pandas as pd
+from IPython.display import Markdown
+from pathlib import Path
+from kedro.framework.startup import bootstrap_project
+from kedro.framework.session import KedroSession
+
+# 1. Apuntar a la raíz del proyecto (donde están 'src' y tu carpeta de configuración)
+project_root = Path("..").resolve()
+bootstrap_project(project_root)
+
+# 2. Iniciar sesión en Kedro y cargar el contexto
+with KedroSession.create(project_path=project_root) as session:
+    context = session.load_context()
+    catalog = context.catalog
+
+# 3. Cargar los datos desde el Data Catalog
+# NOTA: Descomenta la siguiente línea cuando tengas tu catálogo configurado.
+# df_resultados = catalog.load("transacciones_fraudulentas_features")
+
+# Datos simulados para probar la compilación de Quarto en este momento:
+df_resultados = pd.DataFrame({
+    "id_transaccion": ["TRX-9821", "TRX-9822", "TRX-9823", "TRX-9824"],
+    "monto_usd": [150.00, 12500.50, 25.00, 8900.00],
+    "score_riesgo": [0.02, 0.94, 0.10, 0.88],
+    "clasificacion": ["Normal", "Fraude Crítico", "Normal", "Sospechoso"]
+})

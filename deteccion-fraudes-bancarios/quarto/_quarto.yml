@@ -1,0 +1,24 @@
+project:
+  type: default
+  output-dir: _site
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    number-sections: true
+    embed-resources: true
+    css: styles.css # Opcional: si después quieres darle estilo corporativo
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+    geometry:
+      - top=20mm
+      - left=20mm
+      - right=20mm
+      - bottom=20mm
+
+execute:
+  echo: false     # Oculta el código fuente de Python a los lectores del reporte
+  warning: false  # Silencia los warnings de librerías como Pandas o PySpark
