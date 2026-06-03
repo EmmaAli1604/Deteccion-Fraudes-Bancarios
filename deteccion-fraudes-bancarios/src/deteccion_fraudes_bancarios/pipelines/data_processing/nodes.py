@@ -1,6 +1,4 @@
 import pandas as pd
-from pyspark.sql import DataFrame as SparkDataFrame
-
 
 def _is_true(x: pd.Series) -> pd.Series:
     return x == "t"
@@ -63,8 +61,7 @@ def preprocess_reviews(reviews: pd.DataFrame) -> pd.DataFrame:
 
 
 def create_model_input_table(
-    shuttles: SparkDataFrame, companies: SparkDataFrame, reviews: SparkDataFrame
-) -> SparkDataFrame:
+) :
     """Combines all data to create a model input table.
 
     Args:
@@ -79,7 +76,7 @@ def create_model_input_table(
     shuttles = shuttles.withColumnRenamed("id", "shuttle_id")
     companies = companies.withColumnRenamed("id", "company_id")
 
-    rated_shuttles = shuttles.join(reviews, "shuttle_id", how="left")
+    rated_shuttles = shuttles.join("shuttle_id", how="left")
     model_input_table = rated_shuttles.join(companies, "company_id", how="left")
     model_input_table = model_input_table.dropna()
     return model_input_table
