@@ -1,39 +1,45 @@
 from kedro.pipeline import Node, Pipeline
 
 from .nodes import (
-    create_model_input_table,
-    preprocess_companies,
-    preprocess_reviews,
-    preprocess_shuttles,
+    cargar_datos,
+    minusculizar_columnas,
+    eliminar_duplicados,
+    eliminar_nulos,
+    convertir_a_numerico
 )
-
 
 def create_pipeline(**kwargs) -> Pipeline:
     return Pipeline(
         [
             Node(
-                func=preprocess_companies,
-                inputs="companies",
-                outputs="preprocessed_companies",
-                name="preprocess_companies_node",
+                func=cargar_datos,
+                inputs="transacciones_bancarias_raw",
+                outputs="loaded_data",
+                name="cargar_datos_node",
             ),
             Node(
-                func=preprocess_shuttles,
-                inputs="shuttles",
-                outputs="preprocessed_shuttles",
-                name="preprocess_shuttles_node",
+                func=minusculizar_columnas,
+                inputs="loaded_data",
+                outputs="columnas_minusculas",
+                name="minusculizar_columnas_node",
             ),
             Node(
-                func=preprocess_reviews,
-                inputs="reviews",
-                outputs="preprocessed_reviews",
-                name="preprocess_reviews_node",
+                func=eliminar_duplicados,
+                inputs="columnas_minusculas",
+                outputs="sin_duplicados",
+                name="eliminar_duplicados_node",
             ),
             Node(
-                func=create_model_input_table,
-                inputs=["preprocessed_shuttles", "preprocessed_companies", "preprocessed_reviews"],
-                outputs="model_input_table@spark",
-                name="create_model_input_table_node",
+                func=eliminar_nulos,
+                inputs="sin_duplicados",
+                outputs="sin_nulos",
+                name="eliminar_nulos_node",
             ),
+            Node(
+                func=convertir_a_numerico,
+                inputs="sin_nulos",
+                outputs="convertidos_a_numerico",
+                name="convertir_a_numerico_node",
+            ),   
         ]
     )

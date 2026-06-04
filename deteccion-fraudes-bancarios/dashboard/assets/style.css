@@ -1,0 +1,391 @@
+/* ============================================================
+   ANOMALY DETECTION DASHBOARD — CSS TEMÁTICO
+   Sistema cromático:
+     Azul  → tranquilo / normal
+     Rojo  → peligro / anomalía
+     Ámbar → advertencia / vigilancia
+   ============================================================ */
+
+/* ── Variables ─────────────────────────────────────────────── */
+:root {
+  /* Fondos */
+  --bg-base:        #080f1a;
+  --bg-panel:       #0d1829;
+  --bg-card:        #111f33;
+  --bg-card-hover:  #162540;
+
+  /* Bordes y separadores */
+  --border-subtle:  #1c2d44;
+  --border-mid:     #1f3a57;
+
+  /* ── Estado: NORMAL / TRANQUILO (azul) */
+  --calm-100:       #e8f4ff;
+  --calm-300:       #74b9f8;
+  --calm-500:       #2f80ed;
+  --calm-700:       #1a5fb5;
+  --calm-900:       #0d2d5e;
+  --calm-glow:      rgba(47, 128, 237, 0.35);
+
+  /* ── Estado: ADVERTENCIA (ámbar) */
+  --warn-300:       #ffd166;
+  --warn-500:       #f4a621;
+  --warn-700:       #b56b00;
+  --warn-glow:      rgba(244, 166, 33, 0.30);
+
+  /* ── Estado: PELIGRO / ANOMALÍA (rojo) */
+  --danger-100:     #ffe5e5;
+  --danger-300:     #ff7b7b;
+  --danger-500:     #e63946;
+  --danger-700:     #9b1928;
+  --danger-900:     #3d0a10;
+  --danger-glow:    rgba(230, 57, 70, 0.40);
+
+  /* Texto */
+  --text-primary:   #e8f0fe;
+  --text-secondary: #7fa8cc;
+  --text-muted:     #3d5a74;
+  --text-label:     #a0bdd4;
+
+  /* Tipografía */
+  --font-display:   'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  --font-body:      'IBM Plex Sans', 'Segoe UI', sans-serif;
+
+  /* Espaciado */
+  --radius-sm:      6px;
+  --radius-md:      10px;
+  --radius-lg:      14px;
+  --gap:            16px;
+  --gap-lg:         22px;
+
+  /* Animaciones */
+  --transition:     0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Reset / Base ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body, #_dash-app-content {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Patrón de cuadrícula sutil en el fondo */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Dashboard Wrapper ──────────────────────────────────────── */
+.dash-wrapper {
+  position: relative;
+  z-index: 1;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 28px 24px;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--gap-lg);
+  padding-bottom: var(--gap);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.dash-header__title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--calm-300);
+}
+
+.dash-header__title span {
+  color: var(--danger-500);
+}
+
+.dash-header__subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+.dash-header__badge {
+  font-family: var(--font-display);
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.badge-live {
+  background: var(--danger-900);
+  color: var(--danger-300);
+  border: 1px solid var(--danger-700);
+  box-shadow: 0 0 10px var(--danger-glow);
+  animation: pulse-danger 2s ease-in-out infinite;
+}
+
+/* ── Sección / Filas ────────────────────────────────────────── */
+.dash-section {
+  margin-bottom: var(--gap-lg);
+}
+
+.dash-section__label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  padding-left: 2px;
+}
+
+/* ── Grid de KPI (5 columnas) ───────────────────────────────── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--gap);
+}
+
+/* ── Grid Asimétrico (50% + 25% + 25%) ─────────────────────── */
+.asymmetric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--gap);
+}
+
+.asymmetric-grid .card--wide {
+  grid-column: span 1;  /* ocupa una columna base */
+}
+
+/* Para que la primera card sea ~mitad: 3 cols → col 1 = 1.5 unidades */
+.asymmetric-grid {
+  grid-template-columns: 3fr 1.5fr 1.5fr;
+}
+
+/* ── Card Base ──────────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color var(--transition), box-shadow var(--transition),
+              transform var(--transition);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--calm-700);
+  transition: background var(--transition);
+}
+
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-mid);
+  transform: translateY(-1px);
+}
+
+/* ── Card KPI ───────────────────────────────────────────────── */
+.card-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 130px;
+}
+
+.card-kpi__label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.card-kpi__value {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+  transition: color var(--transition);
+}
+
+.card-kpi__delta {
+  font-family: var(--font-display);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.card-kpi__icon {
+  font-size: 22px;
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  opacity: 0.18;
+}
+
+.card-kpi__bar {
+  height: 3px;
+  border-radius: 2px;
+  margin-top: auto;
+  background: var(--border-subtle);
+  overflow: hidden;
+}
+
+.card-kpi__bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Card Content (para gráficas / tablas) ──────────────────── */
+.card-content {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-content__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-content__title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-label);
+  font-weight: 600;
+}
+
+.card-content__body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* ── Estados de severidad ───────────────────────────────────── */
+
+/* NORMAL → azul */
+.status-normal .card-kpi__value   { color: var(--calm-300); }
+.status-normal::before            { background: var(--calm-500); }
+.status-normal                    { box-shadow: 0 0 0 1px var(--calm-900); }
+.status-normal .card-kpi__bar-fill{ background: var(--calm-500); }
+.status-normal .card-kpi__delta   { color: var(--calm-300); }
+.status-normal:hover              { box-shadow: 0 0 18px var(--calm-glow); }
+
+/* ADVERTENCIA → ámbar */
+.status-warn .card-kpi__value     { color: var(--warn-300); }
+.status-warn::before              { background: var(--warn-500); }
+.status-warn                      { box-shadow: 0 0 0 1px var(--warn-700); }
+.status-warn .card-kpi__bar-fill  { background: var(--warn-500); }
+.status-warn .card-kpi__delta     { color: var(--warn-300); }
+.status-warn:hover                { box-shadow: 0 0 18px var(--warn-glow); }
+
+/* PELIGRO → rojo */
+.status-danger .card-kpi__value   { color: var(--danger-300); }
+.status-danger::before            { background: var(--danger-500);
+                                    animation: pulse-top 1.6s ease-in-out infinite; }
+.status-danger                    { box-shadow: 0 0 0 1px var(--danger-700); }
+.status-danger .card-kpi__bar-fill{ background: var(--danger-500); }
+.status-danger .card-kpi__delta   { color: var(--danger-300); }
+.status-danger:hover              { box-shadow: 0 0 22px var(--danger-glow); }
+.status-danger .card-kpi__icon    { opacity: 0.25; color: var(--danger-300); }
+
+/* ── Badges de estado inline ────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+
+.badge--normal  { background: var(--calm-900);  color: var(--calm-300);  border: 1px solid var(--calm-700); }
+.badge--warn    { background: var(--warn-700);   color: var(--warn-300);  border: 1px solid var(--warn-500); opacity:.85; }
+.badge--danger  { background: var(--danger-900); color: var(--danger-300);border: 1px solid var(--danger-700);
+                  animation: pulse-danger 2s ease-in-out infinite; }
+
+/* ── Animaciones ────────────────────────────────────────────── */
+@keyframes pulse-danger {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 6px  var(--danger-glow); }
+  50%       { opacity: 0.8; box-shadow: 0 0 14px var(--danger-glow); }
+}
+
+@keyframes pulse-top {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card { animation: fadeInUp 0.4s ease both; }
+.kpi-grid .card:nth-child(1) { animation-delay: 0.05s; }
+.kpi-grid .card:nth-child(2) { animation-delay: 0.10s; }
+.kpi-grid .card:nth-child(3) { animation-delay: 0.15s; }
+.kpi-grid .card:nth-child(4) { animation-delay: 0.20s; }
+.kpi-grid .card:nth-child(5) { animation-delay: 0.25s; }
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--calm-700); }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  .asymmetric-grid { grid-template-columns: 1fr 1fr; }
+  .asymmetric-grid .card--wide { grid-column: span 2; }
+}
+
+@media (max-width: 768px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .asymmetric-grid { grid-template-columns: 1fr; }
+  .asymmetric-grid .card--wide { grid-column: span 1; }
+  .dash-wrapper { padding: 16px; }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+}
