@@ -1,12 +1,3 @@
-"""
-src/layout.py
-──────────────────────────────────────────────────────────────
-Layout completo del dashboard.
-Solo exporta:  serve_layout() → html.Div
-
-No instancia app ni registra callbacks (eso va en sus propios módulos).
-"""
-
 import math
 import random
 
@@ -130,14 +121,10 @@ def serve_layout() -> html.Div:
             html.Div(className="dash-header__left", children=[
                 html.Div(
                     children=[
-                        "ANOMALY",
-                        html.Span(" WATCH", className="dash-header__accent"),
+                        "Análisis de Exploratorio de Transacciones",
                     ],
                     className="dash-header__title",
-                ),
-                html.Div(
-                    "Análisis Exploratorio de Transacciones",
-                    className="dash-header__subtitle",
+                    html_sub="FILAS :  6362620 , COLUMNAS :  11",
                 ),
             ]),
             html.Div(className="dash-header__right", children=[
@@ -159,53 +146,31 @@ def serve_layout() -> html.Div:
                 children=[
                     kpi_card(
                         card_id="kpi-1",
-                        label="Anomalías detectadas",
-                        value="23",
-                        delta="+7 vs. ayer",
-                        delta_dir="up",
-                        icon="ti-alert-triangle",
-                        bar_pct=78,
-                        status="danger",
+                        label="Total de transacciones",
+                        # Aqui va total de transacciones
+                        value="",
                     ),
                     kpi_card(
                         card_id="kpi-2",
-                        label="Latencia P95",
-                        value="142 ms",
-                        delta="+18 ms",
-                        delta_dir="up",
-                        icon="ti-clock-bolt",
-                        bar_pct=62,
-                        status="warn",
+                        label="Porcentaje de Fraudes",
+                        # Aqui va porcentaje de fraudes
+                        value="",
                     ),
                     kpi_card(
                         card_id="kpi-3",
-                        label="Tasa de error",
-                        value="0.8 %",
-                        delta="−0.1 %",
-                        delta_dir="down",
-                        icon="ti-circle-check",
-                        bar_pct=20,
-                        status="normal",
+                        label="Monto Más Común",
+                        # Aqui va el monto mas comun
+                        value="",
                     ),
                     kpi_card(
                         card_id="kpi-4",
-                        label="Throughput",
-                        value="4.2 k/s",
-                        delta="+300/s",
-                        delta_dir="up",
-                        icon="ti-bolt",
-                        bar_pct=55,
-                        status="normal",
+                        label="Indice de Gini",
+                        # Aqui va el indice de gini
+                        value="",
                     ),
                     kpi_card(
                         card_id="kpi-5",
-                        label="Score de riesgo",
-                        value="87 / 100",
-                        delta="Crítico",
-                        delta_dir="up",
-                        icon="ti-shield-exclamation",
-                        bar_pct=87,
-                        status="danger",
+                        label="Desviación Estándar de Montos",
                     ),
                 ],
             ),
@@ -337,6 +302,8 @@ def serve_layout() -> html.Div:
                 ],
             ),
         ],
+        
+        # Como footer agregar  el dataset se extrajo de https://www.kaggle.com/datasets/rohit265/fraud-detection-dynamics-financial-transaction el dia 01/06/2026
     )
 
     # ── Root ──────────────────────────────────────────────

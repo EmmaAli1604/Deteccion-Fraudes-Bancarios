@@ -1,10 +1,3 @@
-"""
-src/callbacks.py
-──────────────────────────────────────────────────────────────
-Todos los callbacks del dashboard.
-Exporta:  register_callbacks()  — llamada una vez desde main.py.
-"""
-
 import math
 import random
 

@@ -1,6 +1,3 @@
-"""
-src/app.py
-"""
 import os
 import dash
 
