@@ -302,8 +302,21 @@ def serve_layout() -> html.Div:
                 ],
             ),
         ],
-        
-        # Como footer agregar  el dataset se extrajo de https://www.kaggle.com/datasets/rohit265/fraud-detection-dynamics-financial-transaction el dia 01/06/2026
+    )
+    
+    footer = html.Footer(
+        className="dash-footer",
+        children=[
+            html.Span("Fuente del dataset: ", className="dash-footer__label"),
+            html.A(
+                "Fraud Detection Dynamics — Financial Transactions (Kaggle)",
+                href="https://www.kaggle.com/datasets/rohit265/fraud-detection-dynamics-financial-transaction",
+                target="_blank",
+                rel="noopener noreferrer",
+                className="dash-footer__link",
+            ),
+            html.Span(" · Extraído el 01/06/2026", className="dash-footer__date"),
+        ],
     )
 
     # ── Root ──────────────────────────────────────────────
