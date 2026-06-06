@@ -127,12 +127,6 @@ def serve_layout() -> html.Div:
                     html_sub="FILAS :  6362620 , COLUMNAS :  11",
                 ),
             ]),
-            html.Div(className="dash-header__right", children=[
-                html.Span(
-                    [html.Span(className="live-dot"), "EN VIVO"],
-                    className="badge-live",
-                ),
-            ]),
         ],
     )
 
