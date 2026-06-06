@@ -1,4 +1,19 @@
+"""
+src/utils.py
+──────────────────────────────────────────────────────────────
+Componentes reutilizables: kpi_card  y  content_card.
+Requieren el CSS en src/assets/styles.css (Dash lo carga solo).
+"""
+
 from dash import html
+
+
+# ── KPI Card ──────────────────────────────────────────────────
+
+_DELTA_ICON = {
+    "up":   "ti-trending-up",
+    "down": "ti-trending-down",
+}
 
 
 def kpi_card(
@@ -6,41 +21,52 @@ def kpi_card(
     label: str,
     value: str,
     delta: str = "",
-    icon: str = "●",
+    delta_dir: str | None = None,   # "up" | "down" | None
+    icon: str = "ti-circle",        # clase Tabler, p.ej. "ti-cpu"
     bar_pct: int = 0,
-    status: str = "normal",   # "normal" | "warn" | "danger"
+    status: str = "normal",         # "normal" | "warn" | "danger"
 ) -> html.Div:
     """
-    Retorna un Div con clases CSS que definen la severidad:
-      • status-normal  → azul  (tranquilo)
-      • status-warn    → ámbar (advertencia)
-      • status-danger  → rojo  (anomalía/peligro)
+    Tarjeta KPI con franja de color lateral, ícono Tabler,
+    valor principal, delta con tendencia y barra de progreso.
+
+    Estados:
+        normal  → azul
+        warn    → ámbar
+        danger  → rojo
     """
-    # Clamp bar_pct entre 0 y 100
     bar_pct = max(0, min(100, bar_pct))
+
+    delta_items = []
+    if delta_dir in _DELTA_ICON:
+        delta_items.append(
+            html.I(
+                className=f"ti {_DELTA_ICON[delta_dir]}",
+                **{"aria-hidden": "true"},
+            )
+        )
+    delta_items.append(delta)
+
+    delta_cls = "kpi__delta"
+    if delta_dir == "up":
+        delta_cls += " delta--up"
+    elif delta_dir == "down":
+        delta_cls += " delta--down"
 
     return html.Div(
         id=card_id,
-        className=f"card card-kpi status-{status}",
+        className=f"kpi kpi--{status}",
         children=[
-            # Ícono decorativo de fondo
-            html.Span(icon, className="card-kpi__icon"),
-
-            # Etiqueta
-            html.Div(label, className="card-kpi__label"),
-
-            # Valor principal
-            html.Div(value, className="card-kpi__value"),
-
-            # Delta / comparación
-            html.Div(delta, className="card-kpi__delta") if delta else None,
-
-            # Barra de progreso inferior
+            html.Div(className="kpi__accent"),
+            html.I(className=f"ti {icon} kpi__icon", **{"aria-hidden": "true"}),
+            html.Div(label, className="kpi__label"),
+            html.Div(value, className="kpi__value"),
+            html.Div(delta_items, className=delta_cls) if delta else None,
             html.Div(
-                className="card-kpi__bar",
+                className="kpi__bar",
                 children=[
                     html.Div(
-                        className="card-kpi__bar-fill",
+                        className="kpi__bar-fill",
                         style={"width": f"{bar_pct}%"},
                     )
                 ],
@@ -48,33 +74,8 @@ def kpi_card(
         ],
     )
 
-"""
-components/content_card.py
-─────────────────────────────────────────────────────────────
-Componente: Content Card
-Plantilla reutilizable para tarjetas de gráficas / tablas / contenido.
-Acepta cualquier componente Dash como hijo (gráfica Plotly, tabla, etc.)
 
-Uso:
-    from components.content_card import content_card
-    import plotly.graph_objects as go
-    from dash import dcc
-
-    fig = go.Figure(...)   # tu gráfica
-
-    content_card(
-        card_id  = "card-serie-temporal",
-        title    = "Serie temporal — Tráfico de red",
-        badge    = "NORMAL",                    # texto del badge
-        badge_status = "normal",               # "normal" | "warn" | "danger"
-        children = dcc.Graph(figure=fig, ...),  # contenido real
-        wide     = True,                        # True → class card--wide (50%)
-        status   = "normal",                    # borde/glow de la card
-    )
-"""
-
-from dash import html
-
+# ── Content Card ──────────────────────────────────────────────
 
 def content_card(
     card_id: str,
@@ -86,42 +87,37 @@ def content_card(
     status: str = "normal",         # "normal" | "warn" | "danger"
 ) -> html.Div:
     """
-    Retorna una card con:
-      • Encabezado (título + badge opcional)
-      • Cuerpo flexible para cualquier contenido Dash
-      • Modificador --wide para la columna ancha del grid asimétrico
-    """
-    card_classes = f"card card-content status-{status}"
-    if wide:
-        card_classes += " card--wide"
+    Tarjeta de contenido con encabezado (título + badge) y cuerpo libre.
+    Acepta cualquier componente Dash como hijo.
 
-    header_children = [
-        html.Span(title, className="card-content__title"),
-    ]
+    Modificadores:
+        wide=True  → ocupa todo el ancho del grid (grid-column: 1 / -1)
+        status     → controla el color del borde superior
+    """
+    card_cls = f"cc cc--{status}"
+    if wide:
+        card_cls += " card--wide"
+
+    header = [html.Span(title, className="cc__title")]
 
     if badge:
-        header_children.append(
+        header.append(
             html.Span(
-                [html.Span("●", style={"fontSize": "8px"}), f" {badge}"],
+                [html.Span(className="badge__dot"), f"\u00a0{badge}"],
                 className=f"badge badge--{badge_status}",
             )
         )
 
     return html.Div(
         id=card_id,
-        className=card_classes,
+        className=card_cls,
         children=[
-            # ── Encabezado ────────────────────────────────────
+            html.Div(className="cc__header", children=header),
             html.Div(
-                className="card-content__header",
-                children=header_children,
-            ),
-            # ── Cuerpo ────────────────────────────────────────
-            html.Div(
-                className="card-content__body",
+                className="cc__body",
                 children=children or html.Span(
                     "[ componente aquí ]",
-                    style={"fontFamily": "var(--font-display)", "fontSize": "11px"},
+                    style={"fontSize": "12px", "color": "var(--color-text-tertiary)"},
                 ),
             ),
         ],

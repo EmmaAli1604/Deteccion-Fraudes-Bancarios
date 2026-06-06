@@ -1,63 +1,64 @@
+"""
+src/layout.py
+──────────────────────────────────────────────────────────────
+Layout completo del dashboard.
+Solo exporta:  serve_layout() → html.Div
+
+No instancia app ni registra callbacks (eso va en sus propios módulos).
+"""
+
 import math
 import random
 
-import dash
-from dash import Input, Output, dcc, html
+from dash import dcc, html
 import plotly.graph_objects as go
 
 from .utils import content_card, kpi_card
 
-# ────────────────────────────────────────────────────────────
-# Constantes de estilo Plotly
-# ────────────────────────────────────────────────────────────
+
+# ── Configuración global de gráficas ──────────────────────────
 
 PLOT_CONFIG = {"displayModeBar": False, "responsive": True}
 
-TRANSPARENT_LAYOUT = dict(
+_BASE_LAYOUT = dict(
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(0,0,0,0)",
-    font=dict(family="JetBrains Mono, monospace", color="#7fa8cc", size=11),
+    font=dict(family="'DM Mono', monospace", color="#7fa8cc", size=11),
     margin=dict(l=8, r=8, t=8, b=8),
+    showlegend=False,
 )
 
-# Opciones del Dropdown heredadas del documento original
 FILTRO_OPTIONS = [
-    {"label": "Opción A — Transacciones normales", "value": "A"},
-    {"label": "Opción B — Transacciones sospechosas", "value": "B"},
+    {"label": "Opción A — Transacciones normales",      "value": "A"},
+    {"label": "Opción B — Transacciones sospechosas",   "value": "B"},
 ]
 
-# ────────────────────────────────────────────────────────────
-# Helpers: generadores de figuras Plotly
-# ────────────────────────────────────────────────────────────
 
-def _line_chart(color: str = "#2f80ed", anomaly: bool = False) -> go.Figure:
-    """Serie temporal con punto de anomalía opcional."""
+# ── Helpers: figuras Plotly ────────────────────────────────────
+
+def _line_chart(color: str = "#378ADD", anomaly: bool = False) -> go.Figure:
     x = list(range(60))
     y = [50 + 20 * math.sin(i / 8) + random.uniform(-5, 5) for i in x]
 
+    r, g, b = int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16)
     traces = [
         go.Scatter(
             x=x, y=y,
             mode="lines",
             line=dict(color=color, width=1.5),
             fill="tozeroy",
-            fillcolor=(
-                f"rgba({int(color[1:3],16)},"
-                f"{int(color[3:5],16)},"
-                f"{int(color[5:7],16)},0.08)"
-            ),
+            fillcolor=f"rgba({r},{g},{b},0.08)",
             name="serie",
         )
     ]
-
     if anomaly:
         ax, ay = 42, y[42] + 35
         traces.append(go.Scatter(
             x=[ax], y=[ay],
             mode="markers",
             marker=dict(
-                color="#e63946", size=10, symbol="x-thin-open",
-                line=dict(width=2, color="#e63946"),
+                color="#E24B4A", size=10, symbol="x-thin-open",
+                line=dict(width=2, color="#E24B4A"),
             ),
             name="anomalía",
         ))
@@ -65,25 +66,24 @@ def _line_chart(color: str = "#2f80ed", anomaly: bool = False) -> go.Figure:
     return go.Figure(
         data=traces,
         layout={
-            **TRANSPARENT_LAYOUT,
+            **_BASE_LAYOUT,
             "xaxis": dict(showgrid=False, zeroline=False, showticklabels=False),
-            "yaxis": dict(showgrid=True, gridcolor="rgba(47,128,237,0.08)", zeroline=False),
-            "showlegend": False,
+            "yaxis": dict(showgrid=True, gridcolor="rgba(55,138,221,0.08)", zeroline=False),
         },
     )
 
 
-def _bar_chart(color: str = "#2f80ed") -> go.Figure:
+def _bar_chart(color: str = "#378ADD") -> go.Figure:
     cats = ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00"]
     vals = [12, 18, 45, 72, 60, 30]
-    colors = [color if v < 65 else "#e63946" for v in vals]
+    colors = [color if v < 65 else "#E24B4A" for v in vals]
 
     return go.Figure(
         go.Bar(x=cats, y=vals, marker_color=colors, marker_line_width=0),
         layout={
-            **TRANSPARENT_LAYOUT,
+            **_BASE_LAYOUT,
             "xaxis": dict(showgrid=False, zeroline=False),
-            "yaxis": dict(showgrid=True, gridcolor="rgba(47,128,237,0.08)", zeroline=False),
+            "yaxis": dict(showgrid=True, gridcolor="rgba(55,138,221,0.08)", zeroline=False),
         },
     )
 
@@ -91,32 +91,21 @@ def _bar_chart(color: str = "#2f80ed") -> go.Figure:
 def _scatter_chart() -> go.Figure:
     x = [random.gauss(0, 1) for _ in range(80)]
     y = [random.gauss(0, 1) for _ in range(80)]
-    c = ["#e63946" if abs(xi) > 2 or abs(yi) > 2 else "#2f80ed"
+    c = ["#E24B4A" if abs(xi) > 2 or abs(yi) > 2 else "#378ADD"
          for xi, yi in zip(x, y)]
 
     return go.Figure(
         go.Scatter(x=x, y=y, mode="markers",
                    marker=dict(color=c, size=6, opacity=0.8)),
         layout={
-            **TRANSPARENT_LAYOUT,
-            "xaxis": dict(showgrid=True, gridcolor="rgba(47,128,237,0.08)", zeroline=False),
-            "yaxis": dict(showgrid=True, gridcolor="rgba(47,128,237,0.08)", zeroline=False),
+            **_BASE_LAYOUT,
+            "xaxis": dict(showgrid=True, gridcolor="rgba(55,138,221,0.08)", zeroline=False),
+            "yaxis": dict(showgrid=True, gridcolor="rgba(55,138,221,0.08)", zeroline=False),
         },
     )
 
 
-def _grafico_principal(filtro: str) -> go.Figure:
-    """
-    Figura reactiva conectada al Dropdown 'filtro-datos'.
-    Opción A → serie normal (azul).
-    Opción B → serie con anomalías (rojo).
-    """
-    if filtro == "B":
-        return _line_chart(color="#e63946", anomaly=True)
-    return _line_chart(color="#2f80ed", anomaly=False)
-
-
-def graph(fig: go.Figure, height: int = 200) -> dcc.Graph:
+def _graph(fig: go.Figure, height: int = 200) -> dcc.Graph:
     return dcc.Graph(
         figure=fig,
         config=PLOT_CONFIG,
@@ -124,22 +113,47 @@ def graph(fig: go.Figure, height: int = 200) -> dcc.Graph:
     )
 
 
-# ────────────────────────────────────────────────────────────
-# serve_layout  ← patrón del documento original
-# ────────────────────────────────────────────────────────────
+# ── serve_layout ───────────────────────────────────────────────
 
 def serve_layout() -> html.Div:
     """
-    Construye y retorna el layout completo del dashboard.
-    Llamar app.layout = serve_layout  (sin paréntesis) hace que
-    Dash regenere el layout en cada carga de página.
+    Construye y retorna el layout completo.
+    Dash regenera el layout en cada carga de página cuando se asigna
+    como función:  app.layout = serve_layout  (sin paréntesis).
+    En main.py se llama con paréntesis para asignación estática.
     """
 
-    # ── FILA 1: 5 KPI Cards ──────────────────────────────────
-    kpi_row = html.Div(
+    # ── HEADER ──────────────────────────────────────────────
+    header = html.Header(
+        className="dash-header",
+        children=[
+            html.Div(className="dash-header__left", children=[
+                html.Div(
+                    children=[
+                        "ANOMALY",
+                        html.Span(" WATCH", className="dash-header__accent"),
+                    ],
+                    className="dash-header__title",
+                ),
+                html.Div(
+                    "Análisis Exploratorio de Transacciones",
+                    className="dash-header__subtitle",
+                ),
+            ]),
+            html.Div(className="dash-header__right", children=[
+                html.Span(
+                    [html.Span(className="live-dot"), "EN VIVO"],
+                    className="badge-live",
+                ),
+            ]),
+        ],
+    )
+
+    # ── FILA 1: KPIs ────────────────────────────────────────
+    kpi_row = html.Section(
         className="dash-section",
         children=[
-            html.Div("— Indicadores clave", className="dash-section__label"),
+            html.P("Indicadores clave", className="section-label"),
             html.Div(
                 className="kpi-grid",
                 children=[
@@ -147,8 +161,9 @@ def serve_layout() -> html.Div:
                         card_id="kpi-1",
                         label="Anomalías detectadas",
                         value="23",
-                        delta="▲ +7 vs. ayer",
-                        icon="🔴",
+                        delta="+7 vs. ayer",
+                        delta_dir="up",
+                        icon="ti-alert-triangle",
                         bar_pct=78,
                         status="danger",
                     ),
@@ -156,8 +171,9 @@ def serve_layout() -> html.Div:
                         card_id="kpi-2",
                         label="Latencia P95",
                         value="142 ms",
-                        delta="▲ +18 ms",
-                        icon="⚡",
+                        delta="+18 ms",
+                        delta_dir="up",
+                        icon="ti-clock-bolt",
                         bar_pct=62,
                         status="warn",
                     ),
@@ -165,8 +181,9 @@ def serve_layout() -> html.Div:
                         card_id="kpi-3",
                         label="Tasa de error",
                         value="0.8 %",
-                        delta="▼ −0.1 %",
-                        icon="✓",
+                        delta="−0.1 %",
+                        delta_dir="down",
+                        icon="ti-circle-check",
                         bar_pct=20,
                         status="normal",
                     ),
@@ -174,8 +191,9 @@ def serve_layout() -> html.Div:
                         card_id="kpi-4",
                         label="Throughput",
                         value="4.2 k/s",
-                        delta="▲ +300/s",
-                        icon="📈",
+                        delta="+300/s",
+                        delta_dir="up",
+                        icon="ti-bolt",
                         bar_pct=55,
                         status="normal",
                     ),
@@ -183,8 +201,9 @@ def serve_layout() -> html.Div:
                         card_id="kpi-5",
                         label="Score de riesgo",
                         value="87 / 100",
-                        delta="▲ crítico",
-                        icon="⚠",
+                        delta="Crítico",
+                        delta_dir="up",
+                        icon="ti-shield-exclamation",
                         bar_pct=87,
                         status="danger",
                     ),
@@ -193,196 +212,135 @@ def serve_layout() -> html.Div:
         ],
     )
 
-    # ── FILA 2: Filtro + gráfico principal (del documento original) ──
-    filtro_row = html.Div(
+    # ── FILA 2: Análisis exploratorio (con dropdown reactivo) ──
+    filtro_row = html.Section(
         className="dash-section",
         children=[
-            html.Div("— Análisis exploratorio de transacciones", className="dash-section__label"),
+            html.P("Análisis exploratorio de transacciones", className="section-label"),
             html.Div(
                 className="asymmetric-grid",
                 children=[
-                    # Card ancha: título heredado del documento original
                     content_card(
                         card_id="card-principal",
-                        title="Análisis Exploratorio de Transacciones",
-                        badge="INTERACTIVO",
+                        title="Serie temporal de transacciones",
+                        badge="Interactivo",
                         badge_status="normal",
                         wide=True,
                         status="normal",
                         children=[
-                            # ── Dropdown del documento original ──────
                             dcc.Dropdown(
-                                id="filtro-datos",          # ← id original conservado
+                                id="filtro-datos",
                                 options=FILTRO_OPTIONS,
                                 value="A",
                                 clearable=False,
-                                style={
-                                    "marginBottom": "12px",
-                                    "fontFamily": "var(--font-display)",
-                                    "fontSize": "12px",
-                                    "backgroundColor": "var(--bg-panel)",
-                                    "color": "var(--text-primary)",
-                                    "border": "1px solid var(--border-mid)",
-                                    "borderRadius": "var(--radius-sm)",
-                                },
+                                className="dash-dropdown",
                             ),
-                            # ── Gráfico principal del documento original ──
                             dcc.Graph(
-                                id="grafico-principal",     # ← id original conservado
+                                id="grafico-principal",
                                 config=PLOT_CONFIG,
                                 style={"height": "180px", "width": "100%"},
                             ),
                         ],
                     ),
-                    # Card derecha superior
                     content_card(
                         card_id="card-bar-filtro",
                         title="Errores por hora",
-                        badge="NORMAL",
+                        badge="Normal",
                         badge_status="normal",
                         status="normal",
-                        children=graph(_bar_chart(color="#2f80ed"), height=240),
+                        children=_graph(_bar_chart(color="#378ADD"), height=240),
                     ),
-                    # Card derecha inferior
                     content_card(
                         card_id="card-scatter-filtro",
                         title="Espacio de características",
-                        badge="VIGILANCIA",
+                        badge="Vigilancia",
                         badge_status="warn",
                         status="warn",
-                        children=graph(_scatter_chart(), height=240),
+                        children=_graph(_scatter_chart(), height=240),
                     ),
                 ],
             ),
         ],
     )
 
-    # ── FILA 3: Asimétrico ────────────────────────────────────
-    row3 = html.Div(
+    # ── FILA 3: Serie temporal & dispersión ────────────────
+    row3 = html.Section(
         className="dash-section",
         children=[
-            html.Div("— Serie temporal & distribución", className="dash-section__label"),
+            html.P("Serie temporal & distribución", className="section-label"),
             html.Div(
                 className="asymmetric-grid",
                 children=[
                     content_card(
                         card_id="card-serie-1",
                         title="Tráfico de red — últimos 60 min",
-                        badge="ANOMALÍA DETECTADA",
+                        badge="Anomalía detectada",
                         badge_status="danger",
                         wide=True,
                         status="danger",
-                        children=graph(_line_chart(color="#e63946", anomaly=True), height=220),
+                        children=_graph(_line_chart(color="#E24B4A", anomaly=True), height=220),
                     ),
                     content_card(
                         card_id="card-bar-1",
                         title="Monto por categoría",
-                        badge="NORMAL",
+                        badge="Normal",
                         badge_status="normal",
                         status="normal",
-                        children=graph(_bar_chart(color="#2f80ed"), height=220),
+                        children=_graph(_bar_chart(color="#378ADD"), height=220),
                     ),
                     content_card(
                         card_id="card-scatter-1",
                         title="Dispersión de montos",
-                        badge="VIGILANCIA",
+                        badge="Vigilancia",
                         badge_status="warn",
                         status="warn",
-                        children=graph(_scatter_chart(), height=220),
+                        children=_graph(_scatter_chart(), height=220),
                     ),
                 ],
             ),
         ],
     )
 
-    # ── FILA 4: Asimétrico ────────────────────────────────────
-    row4 = html.Div(
+    # ── FILA 4: Logs & métricas secundarias ────────────────
+    row4 = html.Section(
         className="dash-section",
         children=[
-            html.Div("— Logs & métricas secundarias", className="dash-section__label"),
+            html.P("Logs & métricas secundarias", className="section-label"),
             html.Div(
                 className="asymmetric-grid",
                 children=[
                     content_card(
                         card_id="card-serie-2",
                         title="Uso de CPU — clúster principal",
-                        badge="ESTABLE",
+                        badge="Estable",
                         badge_status="normal",
                         wide=True,
                         status="normal",
-                        children=graph(_line_chart(color="#2f80ed", anomaly=False), height=220),
+                        children=_graph(_line_chart(color="#378ADD", anomaly=False), height=220),
                     ),
                     content_card(
                         card_id="card-bar-2",
                         title="Peticiones denegadas",
-                        badge="ADVERTENCIA",
+                        badge="Advertencia",
                         badge_status="warn",
                         status="warn",
-                        children=graph(_bar_chart(color="#f4a621"), height=220),
+                        children=_graph(_bar_chart(color="#BA7517"), height=220),
                     ),
                     content_card(
                         card_id="card-scatter-2",
                         title="Correlación de señales",
-                        badge="NORMAL",
+                        badge="Normal",
                         badge_status="normal",
                         status="normal",
-                        children=graph(_scatter_chart(), height=220),
+                        children=_graph(_scatter_chart(), height=220),
                     ),
                 ],
             ),
         ],
     )
 
-    # ── Layout raíz ──────────────────────────────────────────
+    # ── Root ──────────────────────────────────────────────
     return html.Div(
         className="dash-wrapper",
-        children=[
-            # Header
-            html.Div(
-                className="dash-header",
-                children=[
-                    html.Div([
-                        html.Div(
-                            ["ANOMALY", html.Span(" WATCH"), " — Panel de control"],
-                            className="dash-header__title",
-                        ),
-                        html.Div(
-                            "Análisis Exploratorio de Transacciones",   # ← título del doc original
-                            className="dash-header__subtitle",
-                        ),
-                    ]),
-                    html.Span("● EN VIVO", className="dash-header__badge badge-live"),
-                ],
-            ),
-            kpi_row,
-            filtro_row,
-            row3,
-            row4,
-        ],
+        children=[header, kpi_row, filtro_row, row3, row4],
     )
-
-
-# ────────────────────────────────────────────────────────────
-# App + Callbacks
-# ────────────────────────────────────────────────────────────
-
-app = dash.Dash(__name__, title="Anomaly Dashboard — Transacciones")
-
-# Asignar como función (sin paréntesis) → layout se regenera por request
-app.layout = serve_layout
-
-
-@app.callback(
-    Output("grafico-principal", "figure"),   # ← id original conservado
-    Input("filtro-datos", "value"),          # ← id original conservado
-)
-def actualizar_grafico_principal(filtro: str) -> go.Figure:
-    """
-    Callback conectado al Dropdown del documento original.
-    Actualiza 'grafico-principal' según el valor seleccionado.
-    """
-    return _grafico_principal(filtro)
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
