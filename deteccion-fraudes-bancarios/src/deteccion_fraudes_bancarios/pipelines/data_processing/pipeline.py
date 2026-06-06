@@ -1,7 +1,6 @@
 from kedro.pipeline import Node, Pipeline
 
 from .nodes import (
-    cargar_datos,
     minusculizar_columnas,
     eliminar_duplicados,
     eliminar_nulos,
@@ -12,14 +11,8 @@ def create_pipeline(**kwargs) -> Pipeline:
     return Pipeline(
         [
             Node(
-                func=cargar_datos,
-                inputs="transacciones_bancarias_raw",
-                outputs="loaded_data",
-                name="cargar_datos_node",
-            ),
-            Node(
                 func=minusculizar_columnas,
-                inputs="loaded_data",
+                inputs="transacciones_bancarias_raw",
                 outputs="columnas_minusculas",
                 name="minusculizar_columnas_node",
             ),

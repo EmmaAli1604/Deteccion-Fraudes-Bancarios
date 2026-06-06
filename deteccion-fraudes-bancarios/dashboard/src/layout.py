@@ -5,7 +5,7 @@ import dash
 from dash import Input, Output, dcc, html
 import plotly.graph_objects as go
 
-from components import content_card, kpi_card
+from .utils import content_card, kpi_card
 
 # ────────────────────────────────────────────────────────────
 # Constantes de estilo Plotly

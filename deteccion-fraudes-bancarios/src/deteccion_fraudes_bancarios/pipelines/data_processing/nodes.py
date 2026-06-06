@@ -1,23 +1,5 @@
 import pandas as pd
 
-def cargar_datos(ruta_archivo) -> pd.DataFrame:
-    """
-    Carga los datos desde un archivo CSV.
-    
-    Args:
-        ruta_archivo (str): Ruta al archivo CSV.
-        
-    Returns:
-        pd.DataFrame: DataFrame con los datos cargados.
-    """
-    try:
-        data = pd.read_csv(ruta_archivo)
-        print(f"Datos cargados exitosamente desde {ruta_archivo}")
-        return data
-    except Exception as e:
-        print(f"Error al cargar los datos: {e}")
-        return None
-
 def minusculizar_columnas(data) -> pd.DataFrame:
     """
     Convierte los nombres de las columnas a minúsculas.
