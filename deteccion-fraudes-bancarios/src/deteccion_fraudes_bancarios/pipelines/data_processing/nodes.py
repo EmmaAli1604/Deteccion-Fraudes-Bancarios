@@ -1,82 +1,75 @@
 import pandas as pd
 
-def _is_true(x: pd.Series) -> pd.Series:
-    return x == "t"
-
-
-def _parse_percentage(x: pd.Series) -> pd.Series:
-    x = x.str.replace("%", "")
-    x = x.astype(float) / 100
-    return x
-
-
-def _parse_money(x: pd.Series) -> pd.Series:
-    x = x.str.replace("$", "").str.replace(",", "")
-    x = x.astype(float)
-    return x
-
-
-def preprocess_companies(companies: pd.DataFrame) -> pd.DataFrame:
-    """Preprocesses the data for companies.
-
-    Args:
-        companies: Raw data.
-    Returns:
-        Preprocessed data, with `company_rating` converted to a float and
-        `iata_approved` converted to boolean.
+def minusculizar_columnas(data) -> pd.DataFrame:
     """
-    companies["iata_approved"] = _is_true(companies["iata_approved"])
-    companies["company_rating"] = _parse_percentage(companies["company_rating"])
-    return companies
-
-
-def preprocess_shuttles(shuttles: pd.DataFrame) -> pd.DataFrame:
-    """Preprocesses the data for shuttles.
-
+    Convierte los nombres de las columnas a minúsculas.
+    
     Args:
-        shuttles: Raw data.
+        data (pd.DataFrame): DataFrame con los datos.
+        
     Returns:
-        Preprocessed data, with `price` converted to a float and `d_check_complete`,
-        `moon_clearance_complete` converted to boolean.
+        pd.DataFrame: DataFrame con los nombres de columnas en minúsculas.
     """
-    shuttles["d_check_complete"] = _is_true(shuttles["d_check_complete"])
-    shuttles["moon_clearance_complete"] = _is_true(shuttles["moon_clearance_complete"])
-    shuttles["price"] = _parse_money(shuttles["price"])
-    return shuttles
+    data.columns = data.columns.str.lower()
+    print("Nombres de columnas convertidos a minúsculas.")
+    return data
 
-
-def preprocess_reviews(reviews: pd.DataFrame) -> pd.DataFrame:
-    # Drop columns that aren't used for model training
-    cols_to_drop = [
-        'review_scores_comfort',
-        'review_scores_amenities',
-        'review_scores_trip',
-        'review_scores_crew',
-        'review_scores_location',
-        'review_scores_price',
-        'number_of_reviews',
-        'reviews_per_month',
-    ]
-    return reviews.drop(columns=cols_to_drop, errors="ignore")
-
-
-def create_model_input_table(
-) :
-    """Combines all data to create a model input table.
-
+def eliminar_duplicados(data) -> pd.DataFrame:
+    """
+    Elimina filas duplicadas del DataFrame.
+    
     Args:
-        shuttles: Preprocessed data for shuttles.
-        companies: Preprocessed data for companies.
-        reviews: Raw data for reviews.
+        data (pd.DataFrame): DataFrame con los datos.
+        
     Returns:
-        Model input table.
-
+        pd.DataFrame: DataFrame sin filas duplicadas.
     """
-    # Rename columns to prevent duplicates
-    shuttles = shuttles.withColumnRenamed("id", "shuttle_id")
-    companies = companies.withColumnRenamed("id", "company_id")
+    antes = len(data)
+    data = data.drop_duplicates()
+    despues = len(data)
+    print(f"Duplicados eliminados: {antes - despues}. Filas restantes: {despues}.")
+    return data
 
-    rated_shuttles = shuttles.join("shuttle_id", how="left")
-    model_input_table = rated_shuttles.join(companies, "company_id", how="left")
-    model_input_table = model_input_table.dropna()
-    return model_input_table
+def eliminar_nulos(data) -> pd.DataFrame:
+    """
+    Elimina filas con valores nulos del DataFrame.
+    
+    Args:
+        data (pd.DataFrame): DataFrame con los datos.
+        
+    Returns:
+        pd.DataFrame: DataFrame sin filas con valores nulos.
+    """
+    antes = len(data)
+    data = data.dropna()
+    despues = len(data)
+    print(f"Filas con valores nulos eliminadas: {antes - despues}. Filas restantes: {despues}.")
+    return data
+
+def is_number(columna) -> bool:
+    """
+    Verifica si una columna contiene valores numéricos.
+    
+    Args:
+        columna (pd.Series): Columna del DataFrame.
+        
+    Returns:
+        bool: True si la columna es numérica, False en caso contrario.
+    """
+    return pd.to_numeric(columna, errors='coerce').notnull().all()
+
+def convertir_a_numerico(data) -> pd.DataFrame:
+    """
+    Convierte las columnas numéricas a tipo numérico.
+    
+    Args:
+        data (pd.DataFrame): DataFrame con los datos.
+        
+    Returns:
+        pd.DataFrame: DataFrame con las columnas numéricas convertidas.
+    """
+    for col in data.columns:
+        if is_number(data[col]):
+            data[col] = pd.to_numeric(data[col], errors='coerce')
+            print(f"Columna '{col}' convertida a numérica.")
+    return data

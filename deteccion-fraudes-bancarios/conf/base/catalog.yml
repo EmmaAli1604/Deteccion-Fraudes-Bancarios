@@ -52,3 +52,12 @@ transacciones_calificadas:
 reporte_casos_criticos:
   type: pandas.CSVDataset
   filepath: data/08_reporting/casos_criticos_para_auditoria.csv
+
+# conf/base/catalog.yml
+
+convertidos_a_numerico:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/transacciones_procesadas.csv
+  # Si quieres que guarde el índice del DataFrame, cambia esto a true
+  save_args:
+    index: false
