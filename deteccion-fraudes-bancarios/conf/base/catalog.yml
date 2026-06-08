@@ -43,6 +43,10 @@ transacciones_bancarias_raw:
   type: pandas.CSVDataset
   filepath: data/01_raw/PS_20174392719_1491204439457_log.csv
 
+transacciones_bancarias_procesadas:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/transacciones_procesadas.csv
+
 # Esta es tu tabla cruda con todas las transacciones calificadas
 transacciones_calificadas:
   type: pandas.ParquetDataset
