@@ -17,3 +17,9 @@ def train_clustering_model(X_train: pd.DataFrame, parameters: dict):
     model.fit(X_train)
     return model
 
+# Modelo de Detección de Anomalías
+def train_anomaly_detector(X_train: pd.DataFrame, parameters: dict):
+    """Entrena Isolation Forest para encontrar transacciones que rompen la norma."""
+    model = IsolationForest(**parameters)
+    model.fit(X_train) 
+    return model

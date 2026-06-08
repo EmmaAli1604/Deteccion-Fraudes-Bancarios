@@ -70,3 +70,8 @@ clustering_model:
 type: pickle.PickleDataset
 filepath: data/06_models/kmeans_model.pkl
 versioned: true
+
+anomaly_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/isolation_forest_model.pkl
+  versioned: true
