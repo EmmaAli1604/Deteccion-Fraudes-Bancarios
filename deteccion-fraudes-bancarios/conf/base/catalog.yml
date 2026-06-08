@@ -65,3 +65,8 @@ convertidos_a_numerico:
   # Si quieres que guarde el índice del DataFrame, cambia esto a true
   save_args:
     index: false
+  
+clustering_model:
+type: pickle.PickleDataset
+filepath: data/06_models/kmeans_model.pkl
+versioned: true

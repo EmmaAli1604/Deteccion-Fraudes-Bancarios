@@ -9,3 +9,11 @@ def train_xgboost(X_train: pd.DataFrame, y_train: pd.Series, parameters: dict):
     model = xgb.XGBClassifier(**parameters)
     model.fit(X_train, y_train)
     return model
+
+# Modelo de Clusterización 
+def train_clustering_model(X_train: pd.DataFrame, parameters: dict):
+    """Entrena K-Means para agrupar comportamientos similares."""
+    model = KMeans(**parameters)
+    model.fit(X_train)
+    return model
+
