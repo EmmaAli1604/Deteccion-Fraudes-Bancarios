@@ -1,45 +1,254 @@
-# Deteccion de Fraudes Bancarios
-## Equipo 8
-## Materia : Almacenes y Mineria de Datos
----
-### Objetivo
-Poder crear un dahsboard para el monitoreo de fraudes y su deteccion, asi mismo poder dar conciencia del porcentaje de fraudes que se estan llevando acabo acuerdo a nuestra base de datos, identificando patrones para su deteccion. Con esto se entrenara modelos de clasificacion, agrupacion y de deteccion de anomalias para poder tener un vistazo de como se estan operando los fraudes.
----
-### Por que es importante?
-La detección de fraudes en México es una emergencia económica y social. Las magnitudes de los datos oficiales compartidos por el INEGI y la CONDUSEF demuestran el enorme impacto de esta problemática en el país.  
+# 🔍 Detección de Fraudes Bancarios
 
-Es el delito más frecuente en el país, de acuerdo con la Encuesta Nacional de Victimización y Percepción sobre Seguridad Pública (ENVIPE) del INEGI:
-- El fraude se ha consolidado como el delito más frecuente en todo México, superando incluso al robo en la calle o transporte público y a la extorsión. La tasa supera los 7,500 delitos por cada 100 mil habitantes.  
-- El impacto total de la inseguridad y el delito en los hogares mexicanos asciende a más de 269 mil millones de pesos (lo que equivale aproximadamente al 1.07% del Producto Interno Bruto (PIB) del país). El costo promedio que pierde una persona al ser víctima de un fraude ronda los $7,039 pesos, una cifra que afecta gravemente el presupuesto de una familia promedio.  
+**Equipo 8 — Almacenes y Minería de Datos**
 
-El crecimiento imparable del Fraude Cibernético de acuerdo a la CONDUSEF, muestra en sus reportes de reclamaciones a la banca cómo ha evolucionado el delito:
-- Migración digital: Los fraudes tradicionales (como la clonación de tarjetas en terminales físicas o ventanillas) van a la baja, pero los fraudes cibernéticos se han disparado exponencialmente, representando más del 71% del total de las quejas con impacto monetario.
-- El Comercio por Internet y la Banca Móvil: La gran mayoría de los fraudes cibernéticos ocurren mediante transacciones de comercio electrónico y operaciones de banca móvil/transferencias digitales. Solo al cierre de un periodo anual, el monto reclamado por fraudes cibernéticos superó los $20,000 millones de pesos. 
-- Bajo nivel de recuperación: El dinero es sumamente difícil de recuperar para el usuario. En canales críticos como la Banca Móvil, el porcentaje de dinero abonado o devuelto al usuario llega a ser menor al 5%, debido a que los criminales usan técnicas de Phishing o Vishing (engañar al usuario por llamada o mensaje para que él mismo autorice la transferencia), eximiendo legalmente al banco en muchos casos.
+Sistema de detección de fraudes financieros basado en Machine Learning, con modelos de clasificación, agrupación y detección de anomalías, junto con un dashboard interactivo de análisis exploratorio.
 
-El INEGI reporta constantemente un dato alarmante para el ecosistema judicial de México: la cifra oculta o cifra negra supera el 93%.Esto significa que de cada 100 fraudes que ocurren en México, solo unos 6 o 7 se denuncian o se les abre una carpeta de investigación formal. La gente no denuncia porque considera que es una "pérdida de tiempo" o por desconfianza en las autoridades.
+---
 
-### Importancia de su analisis
-Como las autoridades van muy por detrás del delito y la gente casi no denuncia, la única defensa efectiva es la prevención en tiempo real. Con los 6 millones de registros se pretende entrenar el modelo para poder cortar el fraude antes de que impacte.
+## 📋 Tabla de Contenidos
 
-Si un modelo de Machine Learning detecta un patrón sospechoso, se puede congelar la transacción en milisegundos, protegiendo el dinero antes de que salga del ecosistema bancario.Mitigar pérdidas millonarias para las Fintechs y bancos en México, reducir el fraude automatizadamente disminuye directamente los millones de pesos perdidos en contracargos y, sobre todo, protege la confianza de los usuarios en la economía digital.
+1. [Descripción del Proyecto](#descripción-del-proyecto)
+2. [¿Por qué es importante?](#por-qué-es-importante)
+3. [Tecnologías y Frameworks](#tecnologías-y-frameworks)
+4. [Base de Datos](#base-de-datos)
+5. [Prerrequisitos](#prerrequisitos)
+6. [Instalación y Configuración](#instalación-y-configuración)
+7. [Ejecución de Modelos](#ejecución-de-modelos)
+8. [Dashboard EDA](#dashboard-eda)
+9. [Reporte con Quarto](#reporte-con-quarto)
+10. [Estructura del Proyecto (Kedro)](#estructura-del-proyecto-kedro)
+11. [Autores](#autores)
+
 ---
-### Prerequisitos
+
+## 📌 Descripción del Proyecto
+
+El objetivo del proyecto es construir un **monitoreo de fraudes bancarios** capaz de:
+
+- Visualizar el porcentaje de fraudes en tiempo real a partir de la base de datos.
+- Identificar patrones de comportamiento fraudulento.
+- Entrenar y evaluar modelos de **clasificación**, **agrupación** y **detección de anomalías**.
+
+Con esto se busca ofrecer una herramienta que permita cortar el fraude antes de que impacte al usuario, congelando transacciones sospechosas en milisegundos.
+
 ---
-### Ejecucion
-#### Modelos
-#### Dashboard EDA
-#### Quarto
+
+## ⚠️ ¿Por qué es importante?
+
+La detección de fraudes en México es una emergencia económica y social:
+
+- El fraude es el **delito más frecuente en el país** (ENVIPE, INEGI), con más de 7,500 casos por cada 100,000 habitantes.
+- El impacto económico total supera los **269,000 millones de pesos**, equivalente al 1.07% del PIB.
+- El **71% de las quejas** con impacto monetario ante la CONDUSEF corresponden a fraudes cibernéticos.
+- Solo en banca móvil, el monto reclamado supera los **$20,000 millones de pesos** anuales, con una tasa de recuperación menor al 5%.
+- La **cifra negra supera el 93%**: de cada 100 fraudes, menos de 7 se denuncian formalmente.
+
+La única defensa efectiva es la **prevención en tiempo real mediante Machine Learning**.
+
 ---
-### Base de Datos
+
+## 🛠 Tecnologías y Frameworks
+
+| Componente | Tecnología |
+|---|---|
+| Lenguaje | Python 3.10+ |
+| Pipeline de datos | [Kedro](https://kedro.org/) |
+| Modelos ML | scikit-learn |
+| Dashboard EDA | Das |
+| Reporte | [Quarto](https://quarto.org/) |
+| Entorno virtual | `venv` o `conda` |
+
 ---
-### Framework
+
+## 📊 Base de Datos
+
+Se utilizó el dataset público de Kaggle:
+
+> **[Financial Transactions Dataset for Fraud Detection](https://www.kaggle.com/datasets/aryan208/financial-transactions-dataset-for-fraud-detection)**
+
+Contiene aproximadamente **6 millones de registros** de transacciones financieras etiquetadas para entrenamiento supervisado y no supervisado.
+
+### Descarga del dataset
+
+1. Instala la CLI de Kaggle:
+   ```bash
+   pip install kaggle
+   ```
+
+2. Coloca tu archivo `kaggle.json` con tus credenciales en:
+   ```
+   ~/.kaggle/kaggle.json
+   ```
+
+3. Descarga el dataset:
+   ```bash
+   kaggle datasets download -d aryan208/financial-transactions-dataset-for-fraud-detection
+   unzip financial-transactions-dataset-for-fraud-detection.zip -d data/01_raw/
+   ```
+
 ---
-### Dashboard
+
+## ✅ Prerrequisitos
+
+- Python **3.10 o superior**
+- pip actualizado
+- Git
+
+Verifica tu versión de Python:
+```bash
+python --version
+```
+
 ---
-### Quarto
+
+## ⚙️ Instalación y Configuración
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/tu-usuario/tu-repo.git
+cd tu-repo
+```
+
+### 2. Crear y activar el entorno virtual
+
+```bash
+# Crear el entorno virtual
+python -m venv venv
+
+# Activar en Linux/macOS
+source venv/bin/activate
+
+# Activar en Windows
+venv\Scripts\activate
+```
+
+> **¿Por qué un entorno virtual?** Aísla las dependencias del proyecto del resto del sistema, evitando conflictos de versiones entre paquetes.
+
+### 3. Instalar dependencias
+
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+> El archivo `requirements.txt` incluye Kedro, scikit-learn, pandas, y todas las librerías necesarias para correr el proyecto.
+
 ---
-### Autores
--
-- Emma Alicia Jimenez Sanchez
-- 
+
+## 🤖 Ejecución de Modelos
+
+El proyecto incluye dos modelos principales dentro del pipeline de Kedro:
+
+### Random Forest (Clasificación supervisada)
+
+Detecta si una transacción es fraudulenta o no, entrenado con las etiquetas del dataset.
+
+```bash
+python /src/ModeloSupervisado/main_train.py
+```
+
+> **¿Qué hace?** Entrena un clasificador de bosques aleatorios, genera métricas de evaluación (precisión, recall, F1, AUC-ROC) y guarda el modelo en `data/06_models/`.
+
+### MiniBatchKMeans (Agrupación / Detección de anomalías)
+
+Agrupa transacciones por similitud para identificar comportamientos atípicos sin etiquetas.
+
+```bash
+kedro run --pipeline=data_science
+```
+
+> **¿Qué hace?** Aplica clustering incremental (eficiente para millones de registros), identifica clústeres sospechosos y genera visualizaciones de los grupos detectados.
+
+### Ejecutar todos los pipelines
+
+```bash
+kedro run
+```
+
+---
+
+## 📈 Dashboard EDA
+
+El dashboard de Análisis Exploratorio de Datos permite visualizar distribuciones, correlaciones y patrones de fraude de forma interactiva.
+
+> ⚠️ **Nota:** Debido al volumen de datos (6M registros), la ejecución puede requerir varios minutos y una máquina con al menos 8 GB de RAM.
+
+```bash
+python /dashboard/app.py
+```
+
+Abre tu navegador en: `http://localhost:8050`
+
+---
+
+## 📄 Reporte con Quarto
+
+El reporte final del proyecto está generado con **Quarto**, que combina código Python, visualizaciones y texto en un documento HTML o PDF reproducible.
+
+### Instalación de Quarto
+
+Descarga el instalador desde: https://quarto.org/docs/get-started/
+
+Verifica la instalación:
+```bash
+quarto --version
+```
+
+### Renderizar el reporte
+
+```bash
+# Generar reporte en HTML
+quarto render reporte/reporte_fraudes.qmd --to html
+
+# Generar reporte en PDF
+quarto render reporte/reporte_fraudes.qmd --to pdf
+```
+
+> El archivo de salida se genera en la misma carpeta `reporte/`. Contiene el análisis completo: EDA, resultados de los modelos y conclusiones.
+
+---
+
+## 🗂 Estructura del Proyecto (Kedro)
+
+```
+├── conf/                   # Configuraciones de parámetros y catálogo de datos
+│   ├── base/
+│   │   ├── catalog.yml     # Define las fuentes y destinos de datos
+│   │   └── parameters.yml  # Hiperparámetros de los modelos
+├── data/
+│   ├── 01_raw/             # Datos originales 
+│   ├── 02_intermediate/    # Datos preprocesados
+│   ├── 03_primary/         # Features generadas
+│   └── 06_models/          # Modelos entrenados (.pkl)
+├── notebooks/              # Exploración inicial
+├── quarto/                # Archivos Quarto (.qmd)
+├── reports/                # Reporte pdf y presentacion
+├── src/
+│   └── fraud_detection/
+│       ├── pipelines/
+│       │   ├── data_processing/   
+│       │   ├── data_science/          
+│       │   └── reporting/       
+│       └── settings.py
+├── requirements.txt
+└── README.md
+```
+
+> **Kedro** organiza el proyecto en pipelines reproducibles y modulares, separando claramente los datos de entrada, transformaciones y salidas. Facilita el trabajo en equipo y la trazabilidad de experimentos.
+
+---
+
+## 👥 Autores
+
+- Emma Alicia Jiménez Sánchez 
+- Nancy Elena del Valle Vera 
+- Leonardo Rafael Ortiz Cervantes
+
+
+---
+
+## 📜 Licencia
+
+Este proyecto fue desarrollado con fines académicos para la materia de **Almacenes y Minería de Datos**.
