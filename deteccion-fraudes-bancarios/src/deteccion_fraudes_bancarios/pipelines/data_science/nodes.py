@@ -78,10 +78,3 @@ def test_clustering_model(X_test: pd.DataFrame, model, umbral_anomalia):
     }, index=X_test.index)
     
     return resultados
-
-# Modelo de Detección de Anomalías
-def train_anomaly_detector(X_train: pd.DataFrame, parameters: dict):
-    """Entrena Isolation Forest para encontrar transacciones que rompen la norma."""
-    model = IsolationForest(**parameters)
-    model.fit(X_train) 
-    return model
