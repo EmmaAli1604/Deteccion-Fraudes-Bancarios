@@ -388,3 +388,70 @@ body {
 }
 
 .dash-dropdown .Select-arrow { border-top-color: var(--color-text-secondary) !important; }
+
+/* ════════════════════════════════════════════════════════════════
+   TABLAS DE DATOS  —  agregar al final de assets/styles.css
+   ════════════════════════════════════════════════════════════════ */
+
+/* Contenedor con scroll horizontal para tablas anchas */
+.cc__body {
+  overflow-x: auto;
+}
+
+/* Tabla base */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--color-text-primary);
+}
+
+/* Encabezados */
+.data-table thead tr {
+  border-bottom: 1px solid var(--color-border-mid);
+}
+
+.data-table th {
+  text-align: left;
+  padding: 6px 10px;
+  color: var(--color-text-tertiary);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+/* Filas */
+.data-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Hover row */
+.data-table tbody tr:hover td {
+  background: rgba(55, 138, 221, 0.05);
+  color: var(--color-text-primary);
+}
+
+/* Valores de fraude se colorean en rojo automáticamente */
+.data-table td:last-child {
+  font-weight: 500;
+}
+
+/* Sin datos */
+.no-data {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  display: block;
+  padding: 1rem 0;
+  text-align: center;
+}

@@ -43,6 +43,10 @@ transacciones_bancarias_raw:
   type: pandas.CSVDataset
   filepath: data/01_raw/PS_20174392719_1491204439457_log.csv
 
+transacciones_bancarias_procesadas:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/transacciones_procesadas.csv
+
 # Esta es tu tabla cruda con todas las transacciones calificadas
 transacciones_calificadas:
   type: pandas.ParquetDataset
@@ -61,3 +65,13 @@ convertidos_a_numerico:
   # Si quieres que guarde el índice del DataFrame, cambia esto a true
   save_args:
     index: false
+  
+clustering_model:
+type: pickle.PickleDataset
+filepath: data/06_models/kmeans_model.pkl
+versioned: true
+
+anomaly_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/isolation_forest_model.pkl
+  versioned: true
